@@ -1,0 +1,7 @@
+version: '2.1'
+services:
+  go:
+    build:
+      context: ./docker/go
+    environment:
+      GO111MODULE: "on"

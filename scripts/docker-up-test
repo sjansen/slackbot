@@ -1,0 +1,10 @@
+#!/bin/sh
+
+docker-compose --version
+docker-compose build --pull go
+docker-compose \
+    -f docker-compose.yml \
+    -f docker-compose.test.yml \
+    up --abort-on-container-exit \
+    --exit-code-from=go \
+    --force-recreate

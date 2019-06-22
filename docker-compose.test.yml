@@ -1,0 +1,8 @@
+version: '2.1'
+services:
+  go:
+    command: ./scripts/run-all-tests
+    volumes:
+     - .:/go/src/github.com/sjansen/slackbot
+     - "${GOPATH:-/tmp}/pkg/mod:/go/pkg/mod"
+    working_dir: /go/src/github.com/sjansen/slackbot

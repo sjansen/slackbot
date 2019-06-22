@@ -1,0 +1,16 @@
+#!/bin/sh
+set -e
+
+echo ========================================
+go version
+echo ========================================
+printenv | sort
+echo ========================================
+mkdir -p dist
+go test -race -coverpkg .,./internal/... -coverprofile=dist/coverage.txt -tags integration ./...
+echo ========================================
+echo go vet...
+go vet -tags integration ./...
+echo ========================================
+echo golangci-lint...
+golangci-lint run

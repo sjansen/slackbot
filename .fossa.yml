@@ -1,0 +1,13 @@
+version: 1
+cli:
+  server: https://app.fossa.io
+  fetcher: custom
+  project: slackbot
+analyze:
+  modules:
+  - name: github.com/sjansen/slackbot
+    type: go
+    target: github.com/sjansen/slackbot
+    path: .
+    options:
+      all-tags: true

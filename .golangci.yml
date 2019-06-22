@@ -1,0 +1,38 @@
+run:
+    deadline: 3m
+    issues-exit-code: 1
+    tests: true
+    build-tags:
+    - integration
+
+linters:
+    enable:
+    - deadcode
+    - gocritic
+    - gocyclo
+    - gofmt
+    - goimports
+    - golint
+    - gosimple
+    - govet
+    - ineffassign
+    - lll
+    - maligned
+    - megacheck
+    - misspell
+    - structcheck
+    - typecheck
+    - varcheck
+    disable:
+    - errcheck  # configurable ignore
+    fast: false
+
+linters-settings:
+    gocyclo:
+        min-complexity: 15
+    golint:
+        min-confidence: 0
+    lll:
+        tab-width: 8
+    maligned:
+        suggest-new: true
