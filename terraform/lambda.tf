@@ -41,6 +41,10 @@ resource "aws_lambda_function" "fn" {
       SLACKBOT_VERIFICATION_TOKEN = "${var.slackbot_verification_token}"
     }
   }
+
+  tracing_config {
+    mode = "Active"
+  }
 }
 
 

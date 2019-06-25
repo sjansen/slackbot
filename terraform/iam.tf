@@ -24,8 +24,8 @@ data "aws_iam_policy_document" "media" {
 }
 
 
-resource "aws_iam_policy" "fn" {
-  name = "${var.fn}"
+resource "aws_iam_policy" "fn-logs" {
+  name = "${var.fn}-logs"
   path = "/"
 
   policy = <<EOF
@@ -41,6 +41,26 @@ resource "aws_iam_policy" "fn" {
       "Resource": "arn:aws:logs:*:*:*"
     }
   ]
+}
+EOF
+}
+
+
+resource "aws_iam_policy" "fn-xray" {
+    name        = "${var.fn}-xray"
+    policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": {
+        "Effect": "Allow",
+        "Action": [
+            "xray:PutTraceSegments",
+            "xray:PutTelemetryRecords"
+        ],
+        "Resource": [
+            "*"
+        ]
+    }
 }
 EOF
 }
@@ -78,7 +98,13 @@ resource "aws_iam_role_policy_attachment" "edge" {
 }
 
 
-resource "aws_iam_role_policy_attachment" "fn" {
-  policy_arn = "${aws_iam_policy.fn.arn}"
+resource "aws_iam_role_policy_attachment" "fn-logs" {
+  policy_arn = "${aws_iam_policy.fn-logs.arn}"
+  role = "${aws_iam_role.fn.name}"
+}
+
+
+resource "aws_iam_role_policy_attachment" "fn-xray" {
+  policy_arn = "${aws_iam_policy.fn-xray.arn}"
   role = "${aws_iam_role.fn.name}"
 }
