@@ -21,6 +21,11 @@ var verificationToken = slackevents.OptionVerifyToken(
 )
 
 func main() {
+	env := os.Getenv("AWS_EXECUTION_ENV")
+	if env == "" {
+		fmt.Fprintln(os.Stderr, "This executable is intended to run on AWS Lambda.")
+		os.Exit(1)
+	}
 	lambda.Start(handler)
 }
 
