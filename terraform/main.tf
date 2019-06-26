@@ -37,6 +37,10 @@ variable "aws_region" {
 # Resources
 ##
 
+variable "db" {
+  type = "string"
+}
+
 variable "dns_name" {
   type = "string"
 }

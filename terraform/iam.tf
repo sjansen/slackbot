@@ -24,6 +24,30 @@ data "aws_iam_policy_document" "media" {
 }
 
 
+resource "aws_iam_policy" "fn-db" {
+  name = "${var.fn}-db"
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+       "Effect": "Allow",
+       "Action": [
+         "dynamodb:BatchGetItem",
+         "dynamodb:BatchWriteItem",
+         "dynamodb:GetItem",
+         "dynamodb:PutItem",
+         "dynamodb:Query",
+         "dynamodb:UpdateItem"
+       ],
+       "Resource": "${aws_dynamodb_table.db.arn}"
+    }
+  ]
+}
+EOF
+}
+
+
 resource "aws_iam_policy" "fn-logs" {
   name = "${var.fn}-logs"
   path = "/"
@@ -95,6 +119,12 @@ EOF
 resource "aws_iam_role_policy_attachment" "edge" {
   role = "${aws_iam_role.edge.name}"
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+
+resource "aws_iam_role_policy_attachment" "fn-db" {
+  policy_arn = "${aws_iam_policy.fn-db.arn}"
+  role = "${aws_iam_role.fn.name}"
 }
 
 

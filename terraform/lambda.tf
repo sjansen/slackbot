@@ -37,6 +37,7 @@ resource "aws_lambda_function" "fn" {
   environment {
     variables = {
       SLACKBOT_USE_ALB = "${var.use_alb ? "true" : "false"}"
+      SLACKBOT_DYNAMODB_TABLE = "${var.db}"
       SLACKBOT_OAUTH_ACCESS_TOKEN = "${var.slackbot_oauth_access_token}"
       SLACKBOT_VERIFICATION_TOKEN = "${var.slackbot_verification_token}"
     }

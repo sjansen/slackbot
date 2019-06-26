@@ -5,20 +5,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/nlopes/slack"
 	"github.com/nlopes/slack/slackevents"
+
+	"github.com/sjansen/slackbot/internal/repos"
 )
 
 var api = slack.New(os.Getenv("SLACKBOT_OAUTH_ACCESS_TOKEN"))
+var table = os.Getenv("SLACKBOT_DYNAMODB_TABLE")
 var verificationToken = slackevents.OptionVerifyToken(
 	&slackevents.TokenComparator{
 		VerificationToken: os.Getenv("SLACKBOT_VERIFICATION_TOKEN"),
 	},
 )
+
+var repo *repos.WordRepo
+var setWord = regexp.MustCompile(`set word (?P<word>\w+)`)
 
 func main() {
 	env := os.Getenv("AWS_EXECUTION_ENV")
@@ -26,6 +33,14 @@ func main() {
 		fmt.Fprintln(os.Stderr, "This executable is intended to run on AWS Lambda.")
 		os.Exit(1)
 	}
+
+	var err error
+	repo, err = repos.NewWordRepo(table)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+
 	lambda.Start(handler)
 }
 
@@ -53,21 +68,35 @@ func handler(ctx context.Context, req *events.APIGatewayProxyRequest) (*events.A
 		switch ev := event.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			fmt.Printf("Event Data: %#v\n", ev)
-			channelID, timestamp, err := api.PostMessage(
-				ev.Channel,
-				slack.MsgOptionText("What's up?", false),
-			)
-			if err != nil {
-				fmt.Printf("Error: %s\n", err.Error())
-			} else {
-				fmt.Printf("Message sent to %q at %s\n", channelID, timestamp)
+			if strings.Contains(ev.Text, "get word") {
+				msg, err := repo.GetWord()
+				if err != nil {
+					msg = err.Error()
+				} else if msg == "" {
+					msg = "not set"
+				}
+				channelID, timestamp, err := api.PostMessage(
+					ev.Channel,
+					slack.MsgOptionText(msg, false),
+				)
+				if err != nil {
+					fmt.Printf("Error: %s\n", err.Error())
+				} else {
+					fmt.Printf("Message sent to %q at %s\n", channelID, timestamp)
+				}
 			}
 		case *slackevents.MessageEvent:
 			fmt.Printf("Event Data: %#v\n", ev)
-			if strings.Contains(ev.Text, "knock knock") {
+			matches := setWord.FindStringSubmatch(ev.Text)
+			if len(matches) > 1 {
+				msg := "success"
+				err := repo.SetWord(matches[1])
+				if err != nil {
+					msg = err.Error()
+				}
 				channelID, timestamp, err := api.PostMessage(
 					ev.Channel,
-					slack.MsgOptionText("Who's there?", false),
+					slack.MsgOptionText(msg, false),
 				)
 				if err != nil {
 					fmt.Printf("Error: %s\n", err.Error())
