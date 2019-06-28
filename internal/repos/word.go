@@ -1,12 +1,14 @@
 package repos
 
 import (
+	"context"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"github.com/aws/aws-sdk-go/service/dynamodb/dynamodbattribute"
+	"github.com/aws/aws-xray-sdk-go/xray"
 )
 
 var twoWeeks = time.Hour * 24 * 14
@@ -28,18 +30,20 @@ func NewWordRepo(table string) (*WordRepo, error) {
 		return nil, err
 	}
 
+	svc := dynamodb.New(sess)
+	xray.AWS(svc.Client)
 	repo := &WordRepo{
-		svc:   dynamodb.New(sess),
+		svc:   svc,
 		table: aws.String(table),
 	}
 	return repo, err
 }
 
-func (repo *WordRepo) GetWord() (string, error) {
+func (repo *WordRepo) GetWord(ctx context.Context) (string, error) {
 	now := time.Now().UTC()
 	id := idForDate(now)
 
-	result, err := repo.svc.GetItem(&dynamodb.GetItemInput{
+	result, err := repo.svc.GetItemWithContext(ctx, &dynamodb.GetItemInput{
 		TableName: repo.table,
 		Key: map[string]*dynamodb.AttributeValue{
 			"id": {
@@ -59,7 +63,7 @@ func (repo *WordRepo) GetWord() (string, error) {
 	return item.Word, err
 }
 
-func (repo *WordRepo) SetWord(word string) error {
+func (repo *WordRepo) SetWord(ctx context.Context, word string) error {
 	now := time.Now().UTC()
 	id := idForDate(now)
 	expires := now.Add(twoWeeks)
@@ -73,7 +77,7 @@ func (repo *WordRepo) SetWord(word string) error {
 		return err
 	}
 
-	_, err = repo.svc.PutItem(&dynamodb.PutItemInput{
+	_, err = repo.svc.PutItemWithContext(ctx, &dynamodb.PutItemInput{
 		Item:      av,
 		TableName: repo.table,
 	})
