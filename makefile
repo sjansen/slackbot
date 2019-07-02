@@ -3,7 +3,7 @@
 default: test
 
 deploy:
-	GOOS=linux GOARCH=amd64 go build -o dist/slackbot main.go
+	GOOS=linux GOARCH=amd64 go build -o dist/slackbot handlers/bot/main.go
 	(cd dist ; zip -9 slackbot.zip slackbot)
 	cd terraform/ && terraform apply -auto-approve
 
