@@ -3,6 +3,7 @@
 /.vscode/
 
 # Files
+/local.env
 /slackbot
 /docker-compose.override.yml
 /TODO
