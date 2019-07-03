@@ -1,7 +1,7 @@
 resource "aws_api_gateway_rest_api" "gw" {
   count = var.use_alb ? 0 : 1
 
-  name        = var.lb
+  name = var.lb
   endpoint_configuration {
     types = ["REGIONAL"]
   }

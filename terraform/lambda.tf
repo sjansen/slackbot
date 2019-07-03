@@ -1,9 +1,9 @@
 data "archive_file" "edge" {
-  type = "zip"
+  type        = "zip"
   output_path = "../dist/edge.zip"
   source {
     filename = "index.js"
-    content = file("../edge/rewrite.js")
+    content  = file("../edge/rewrite.js")
   }
 }
 
@@ -11,15 +11,15 @@ data "archive_file" "edge" {
 resource "aws_lambda_function" "edge" {
   provider = "aws.cloudfront"
 
-  function_name = "${var.fn}-rewrite"
-  filename = data.archive_file.edge.output_path
+  function_name    = "${var.fn}-rewrite"
+  filename         = data.archive_file.edge.output_path
   source_code_hash = data.archive_file.edge.output_base64sha256
-  role = aws_iam_role.edge.arn
-  runtime = "nodejs8.10"
-  handler = "index.handler"
-  memory_size = 128
-  timeout = 3
-  publish = true
+  role             = aws_iam_role.edge.arn
+  runtime          = "nodejs8.10"
+  handler          = "index.handler"
+  memory_size      = 128
+  timeout          = 3
+  publish          = true
 }
 
 
@@ -36,8 +36,8 @@ resource "aws_lambda_function" "fn" {
 
   environment {
     variables = {
-      SLACKBOT_USE_ALB = var.use_alb ? "true" : "false"
-      SLACKBOT_DYNAMODB_TABLE = var.db
+      SLACKBOT_USE_ALB            = var.use_alb ? "true" : "false"
+      SLACKBOT_DYNAMODB_TABLE     = var.db
       SLACKBOT_OAUTH_ACCESS_TOKEN = var.slackbot_oauth_access_token
       SLACKBOT_VERIFICATION_TOKEN = var.slackbot_verification_token
     }

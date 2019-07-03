@@ -63,6 +63,6 @@ resource "aws_alb_target_group_attachment" "fn" {
   count = var.use_alb ? 1 : 0
 
   target_group_arn = join("", aws_alb_target_group.slackbot.*.arn)
-  target_id         = aws_lambda_function.fn.arn
-  depends_on        = ["aws_lambda_permission.lb"]
+  target_id        = aws_lambda_function.fn.arn
+  depends_on       = ["aws_lambda_permission.lb"]
 }

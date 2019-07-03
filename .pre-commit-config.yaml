@@ -20,3 +20,9 @@ repos:
       entry: revive -exclude ./vendor/... ./...
       pass_filenames: false
       types: [go]
+   -  id: terraform
+      name: terraform
+      language: system
+      entry: terraform fmt -check -recursive terraform/
+      pass_filenames: false
+      types: [terraform]

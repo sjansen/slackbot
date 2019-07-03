@@ -14,15 +14,15 @@ provider "aws" {
   version = "~> 2.16.0"
 
   profile = var.aws_profile
-  region = var.aws_region
+  region  = var.aws_region
 }
 
 provider "aws" {
   version = "~> 2.16"
 
-  alias = "cloudfront"
+  alias   = "cloudfront"
   profile = var.aws_profile
-  region = "us-east-1"
+  region  = "us-east-1"
 }
 
 variable "aws_profile" {

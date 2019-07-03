@@ -12,8 +12,8 @@ resource "aws_s3_bucket" "logs" {
   acl           = "log-delivery-write"
   force_destroy = true
   lifecycle_rule {
-    id      = "cleanup"
-    enabled = true
+    id                                     = "cleanup"
+    enabled                                = true
     abort_incomplete_multipart_upload_days = 3
     expiration {
       days = 90
@@ -56,11 +56,11 @@ POLICY
 
 
 resource "aws_s3_bucket" "media" {
-  bucket        = var.media
-  acl           = "private"
+  bucket = var.media
+  acl = "private"
   force_destroy = true
   lifecycle_rule {
-    id      = "cleanup"
+    id = "cleanup"
     enabled = true
     abort_incomplete_multipart_upload_days = 3
     expiration {
