@@ -1,5 +1,5 @@
 resource "aws_cloudfront_distribution" "cdn" {
-  count = "${var.use_alb ? 0 : 1}"
+  count = var.use_alb ? 0 : 1
   provider = "aws.cloudfront"
 
   enabled             = true
@@ -8,7 +8,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   price_class         = "PriceClass_100"
 
   aliases = [
-    "${var.dns_name}"
+    var.dns_name
   ]
 
   custom_error_response {
@@ -66,13 +66,13 @@ resource "aws_cloudfront_distribution" "cdn" {
 
     lambda_function_association {
       event_type = "origin-request"
-      lambda_arn = "${aws_lambda_function.edge.qualified_arn}"
+      lambda_arn = aws_lambda_function.edge.qualified_arn
     }
   }
 
   logging_config {
     include_cookies = false
-    bucket          = "${aws_s3_bucket.logs.bucket_domain_name}"
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
   }
 
   ordered_cache_behavior {
@@ -97,7 +97,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   origin {
-    domain_name = "${local.apigw_url_parts[2]}"
+    domain_name = local.apigw_url_parts[2]
     origin_path = "/default"
     origin_id = "APIGW"
 
@@ -110,10 +110,10 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   origin {
-    domain_name = "${aws_s3_bucket.media.bucket_domain_name}"
+    domain_name = aws_s3_bucket.media.bucket_domain_name
     origin_id   = "S3-${var.media}"
     s3_origin_config {
-      origin_access_identity = "${aws_cloudfront_origin_access_identity.cdn.cloudfront_access_identity_path}"
+      origin_access_identity = aws_cloudfront_origin_access_identity.cdn.cloudfront_access_identity_path
     }
   }
 
@@ -124,7 +124,7 @@ resource "aws_cloudfront_distribution" "cdn" {
   }
 
   viewer_certificate {
-    acm_certificate_arn = "${aws_acm_certificate_validation.cert.certificate_arn}"
+    acm_certificate_arn = aws_acm_certificate_validation.cert.certificate_arn
     minimum_protocol_version = "TLSv1.2_2018"
     ssl_support_method = "sni-only"
   }

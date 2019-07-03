@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "media" {
     resources = ["${aws_s3_bucket.media.arn}/*"]
     principals {
       type        = "AWS"
-      identifiers = ["${aws_cloudfront_origin_access_identity.cdn.iam_arn}"]
+      identifiers = [aws_cloudfront_origin_access_identity.cdn.iam_arn]
     }
   }
 }
@@ -92,12 +92,12 @@ EOF
 
 resource "aws_iam_role" "edge" {
   name_prefix = "${var.fn}-edge"
-  assume_role_policy = "${data.aws_iam_policy_document.edge.json}"
+  assume_role_policy = data.aws_iam_policy_document.edge.json
 }
 
 
 resource "aws_iam_role" "fn" {
-  name = "${var.fn}"
+  name = var.fn
 
   assume_role_policy = <<EOF
 {
@@ -117,24 +117,24 @@ EOF
 
 
 resource "aws_iam_role_policy_attachment" "edge" {
-  role = "${aws_iam_role.edge.name}"
+  role = aws_iam_role.edge.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 
 resource "aws_iam_role_policy_attachment" "fn-db" {
-  policy_arn = "${aws_iam_policy.fn-db.arn}"
-  role = "${aws_iam_role.fn.name}"
+  policy_arn = aws_iam_policy.fn-db.arn
+  role = aws_iam_role.fn.name
 }
 
 
 resource "aws_iam_role_policy_attachment" "fn-logs" {
-  policy_arn = "${aws_iam_policy.fn-logs.arn}"
-  role = "${aws_iam_role.fn.name}"
+  policy_arn = aws_iam_policy.fn-logs.arn
+  role = aws_iam_role.fn.name
 }
 
 
 resource "aws_iam_role_policy_attachment" "fn-xray" {
-  policy_arn = "${aws_iam_policy.fn-xray.arn}"
-  role = "${aws_iam_role.fn.name}"
+  policy_arn = aws_iam_policy.fn-xray.arn
+  role = aws_iam_role.fn.name
 }

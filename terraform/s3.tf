@@ -2,13 +2,13 @@ data "aws_elb_service_account" "main" {}
 
 
 resource "aws_s3_bucket_policy" "media" {
-  bucket = "${aws_s3_bucket.media.id}"
-  policy = "${data.aws_iam_policy_document.media.json}"
+  bucket = aws_s3_bucket.media.id
+  policy = data.aws_iam_policy_document.media.json
 }
 
 
 resource "aws_s3_bucket" "logs" {
-  bucket        = "${var.logs}"
+  bucket        = var.logs
   acl           = "log-delivery-write"
   force_destroy = true
   lifecycle_rule {
@@ -50,13 +50,13 @@ POLICY
     }
   }
   versioning {
-    enabled = "${var.protect_logs}"
+    enabled = var.protect_logs
   }
 }
 
 
 resource "aws_s3_bucket" "media" {
-  bucket        = "${var.media}"
+  bucket        = var.media
   acl           = "private"
   force_destroy = true
   lifecycle_rule {
@@ -78,6 +78,6 @@ resource "aws_s3_bucket" "media" {
     }
   }
   versioning {
-    enabled = "${var.protect_media}"
+    enabled = var.protect_media
   }
 }

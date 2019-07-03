@@ -1,9 +1,9 @@
 resource "aws_security_group" "sg" {
-  count = "${var.use_alb ? 1 : 0}"
+  count = var.use_alb ? 1 : 0
 
-  name        = "${var.sg}"
+  name        = var.sg
   description = "Used by slackbot"
-  vpc_id      = "${var.vpc_id}"
+  vpc_id      = var.vpc_id
 
   ingress {
     from_port   = 0

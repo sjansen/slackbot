@@ -13,15 +13,15 @@ provider "archive" {
 provider "aws" {
   version = "~> 2.16.0"
 
-  profile = "${var.aws_profile}"
-  region = "${var.aws_region}"
+  profile = var.aws_profile
+  region = var.aws_region
 }
 
 provider "aws" {
   version = "~> 2.16"
 
   alias = "cloudfront"
-  profile = "${var.aws_profile}"
+  profile = var.aws_profile
   region = "us-east-1"
 }
 
