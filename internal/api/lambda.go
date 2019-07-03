@@ -53,7 +53,7 @@ func (h *LambdaHandler) HandleRequest(ctx context.Context, req *events.APIGatewa
 		switch ev := event.InnerEvent.Data.(type) {
 		case *slackevents.AppMentionEvent:
 			fmt.Printf("Event Data: %#v\n", ev)
-			h.app.HandleMention(ctx, ev.Channel, ev.Text)
+			h.app.HandleMention(ctx, ev.Channel, ev.User, ev.Text)
 		case *slackevents.MessageEvent:
 			fmt.Printf("Event Data: %#v\n", ev)
 			h.app.HandlePrivateMessage(ctx, ev.Channel, ev.Text)

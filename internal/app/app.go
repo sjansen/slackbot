@@ -13,6 +13,7 @@ type Engine struct {
 
 type SlackClient interface {
 	PostMessage(ctx context.Context, channel, text string) error
+	PostEphemeralMessage(ctx context.Context, channel, user, text string) error
 }
 
 type WordRepo interface {
@@ -22,7 +23,7 @@ type WordRepo interface {
 
 var setWord = regexp.MustCompile(`set word (?P<word>\w+)`)
 
-func (app *Engine) HandleMention(ctx context.Context, channel, text string) error {
+func (app *Engine) HandleMention(ctx context.Context, channel, user, text string) error {
 	if strings.Contains(text, "get word") {
 		msg, err := app.Repo.GetWord(ctx)
 		if err != nil {
@@ -30,7 +31,7 @@ func (app *Engine) HandleMention(ctx context.Context, channel, text string) erro
 		} else if msg == "" {
 			msg = "not set"
 		}
-		app.Slack.PostMessage(ctx, channel, msg)
+		app.Slack.PostEphemeralMessage(ctx, channel, user, msg)
 	}
 	return nil
 }
