@@ -70,8 +70,32 @@ EOF
 }
 
 
+resource "aws_iam_policy" "fn-ssm" {
+  name = "${var.fn}-ssm"
+  path = "/"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ssm:GetParameters"
+      ],
+      "Resource": [
+        "arn:aws:ssm:*:*:parameter/${var.slackbot_oauth_access_token}",
+        "arn:aws:ssm:*:*:parameter/${var.slackbot_verification_token}"
+      ]
+    }
+  ]
+}
+EOF
+}
+
+
 resource "aws_iam_policy" "fn-xray" {
-    name   = "${var.fn}-xray"
+    name = "${var.fn}-xray"
     policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -91,7 +115,7 @@ EOF
 
 
 resource "aws_iam_role" "edge" {
-  name_prefix = "${var.fn}-edge"
+  name_prefix        = "${var.fn}-edge"
   assume_role_policy = data.aws_iam_policy_document.edge.json
 }
 
@@ -117,24 +141,30 @@ EOF
 
 
 resource "aws_iam_role_policy_attachment" "edge" {
-  role       = aws_iam_role.edge.name
+  role = aws_iam_role.edge.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 
 resource "aws_iam_role_policy_attachment" "fn-db" {
   policy_arn = aws_iam_policy.fn-db.arn
-  role       = aws_iam_role.fn.name
+  role = aws_iam_role.fn.name
 }
 
 
 resource "aws_iam_role_policy_attachment" "fn-logs" {
   policy_arn = aws_iam_policy.fn-logs.arn
-  role       = aws_iam_role.fn.name
+  role = aws_iam_role.fn.name
+}
+
+
+resource "aws_iam_role_policy_attachment" "fn-ssm" {
+  policy_arn = aws_iam_policy.fn-ssm.arn
+  role = aws_iam_role.fn.name
 }
 
 
 resource "aws_iam_role_policy_attachment" "fn-xray" {
   policy_arn = aws_iam_policy.fn-xray.arn
-  role       = aws_iam_role.fn.name
+  role = aws_iam_role.fn.name
 }

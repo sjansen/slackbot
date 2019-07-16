@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/nlopes/slack/slackevents"
@@ -21,7 +20,7 @@ func NewLambdaHandler(app *app.Engine, verificationToken string) *LambdaHandler 
 		app: app,
 		verificationToken: slackevents.OptionVerifyToken(
 			&slackevents.TokenComparator{
-				VerificationToken: os.Getenv("SLACKBOT_VERIFICATION_TOKEN"),
+				VerificationToken: verificationToken,
 			},
 		),
 	}

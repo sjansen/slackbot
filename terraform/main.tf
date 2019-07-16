@@ -86,18 +86,28 @@ variable "sg" {
 }
 
 variable "slackbot_oauth_access_token" {
-  type = "string"
+  type    = "string"
+  default = "slackbot/oauth_access_token"
 }
 
 variable "slackbot_verification_token" {
-  type = "string"
+  type    = "string"
+  default = "slackbot/verification_token"
 }
 
 variable "subnet_ids" {
   type = "list"
 }
 
+variable "team_id" {
+  type = "string"
+}
+
 variable "use_alb" {
+  default = false
+}
+
+variable "use_ssm" {
   default = true
 }
 

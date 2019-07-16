@@ -5,6 +5,9 @@ import (
 	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/aws/aws-xray-sdk-go/xray"
 
 	"github.com/sjansen/slackbot/internal/api"
@@ -20,12 +23,43 @@ func main() {
 		os.Exit(1)
 	}
 
+	sess, err := session.NewSession()
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err.Error())
+		os.Exit(1)
+	}
+
+	oauthAccessToken := os.Getenv("SLACKBOT_OAUTH_ACCESS_TOKEN")
+	verificationToken := os.Getenv("SLACKBOT_VERIFICATION_TOKEN")
+	if os.Getenv("SLACKBOT_USE_SSM") != "" {
+		svc := ssm.New(sess)
+
+		resp, err := svc.GetParameters(&ssm.GetParametersInput{
+			Names: []*string{
+				aws.String(oauthAccessToken),
+				aws.String(verificationToken),
+			},
+			WithDecryption: aws.Bool(true),
+		})
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err.Error())
+			os.Exit(1)
+		}
+		for _, param := range resp.Parameters {
+			switch *param.Name {
+			case oauthAccessToken:
+				oauthAccessToken = *param.Value
+			case verificationToken:
+				verificationToken = *param.Value
+			}
+		}
+	}
+
 	xray.Configure(xray.Config{
 		LogLevel: "info",
 	})
-	slack := clients.NewSlackClient(
-		os.Getenv("SLACKBOT_OAUTH_ACCESS_TOKEN"),
-	)
+
+	slack := clients.NewSlackClient(oauthAccessToken)
 
 	repo, err := repos.NewWordRepo(
 		os.Getenv("SLACKBOT_DYNAMODB_TABLE"),
@@ -40,7 +74,7 @@ func main() {
 			Repo:  repo,
 			Slack: slack,
 		},
-		os.Getenv("SLACKBOT_VERIFICATION_TOKEN"),
+		verificationToken,
 	)
 
 	lambda.Start(handler.HandleRequest)
