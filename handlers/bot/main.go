@@ -30,14 +30,14 @@ func main() {
 	}
 
 	oauthAccessToken := os.Getenv("SLACKBOT_OAUTH_ACCESS_TOKEN")
-	verificationToken := os.Getenv("SLACKBOT_VERIFICATION_TOKEN")
+	reqSigningSecret := os.Getenv("SLACKBOT_REQ_SIGNING_SECRET")
 	if os.Getenv("SLACKBOT_USE_SSM") != "" {
 		svc := ssm.New(sess)
 
 		resp, err := svc.GetParameters(&ssm.GetParametersInput{
 			Names: []*string{
 				aws.String(oauthAccessToken),
-				aws.String(verificationToken),
+				aws.String(reqSigningSecret),
 			},
 			WithDecryption: aws.Bool(true),
 		})
@@ -49,8 +49,8 @@ func main() {
 			switch *param.Name {
 			case oauthAccessToken:
 				oauthAccessToken = *param.Value
-			case verificationToken:
-				verificationToken = *param.Value
+			case reqSigningSecret:
+				reqSigningSecret = *param.Value
 			}
 		}
 	}
@@ -74,7 +74,7 @@ func main() {
 			Repo:  repo,
 			Slack: slack,
 		},
-		verificationToken,
+		reqSigningSecret,
 	)
 
 	lambda.Start(handler.HandleRequest)

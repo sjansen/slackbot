@@ -4,41 +4,59 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/aws/aws-lambda-go/events"
+	"github.com/nlopes/slack"
 	"github.com/nlopes/slack/slackevents"
+
 	"github.com/sjansen/slackbot/internal/app"
 )
 
 type LambdaHandler struct {
-	app               *app.Engine
-	verificationToken slackevents.Option
+	app           *app.Engine
+	signingSecret string
 }
 
-func NewLambdaHandler(app *app.Engine, verificationToken string) *LambdaHandler {
+func NewLambdaHandler(app *app.Engine, signingSecret string) *LambdaHandler {
 	return &LambdaHandler{
-		app: app,
-		verificationToken: slackevents.OptionVerifyToken(
-			&slackevents.TokenComparator{
-				VerificationToken: verificationToken,
-			},
-		),
+		app:           app,
+		signingSecret: signingSecret,
 	}
 }
 
 func (h *LambdaHandler) HandleRequest(ctx context.Context, req *events.APIGatewayProxyRequest) (
 	*events.APIGatewayProxyResponse, error,
 ) {
-	fmt.Printf("Request: %s\n", req.Body)
+	fmt.Printf("Request: base64=%v %s\n", req.IsBase64Encoded, req.Body)
+
+	verifier, err := slack.NewSecretsVerifier(req.MultiValueHeaders, h.signingSecret)
+	if err != nil {
+		return nil, err
+	}
+	if _, err = verifier.Write([]byte(req.Body)); err != nil {
+		return nil, err
+	}
+	if err = verifier.Ensure(); err != nil {
+		fmt.Printf("Error: %s\n", err.Error())
+		resp := &events.APIGatewayProxyResponse{
+			StatusCode: http.StatusUnauthorized,
+			Headers: map[string]string{
+				"Cache-Control": "no-cache, no-store, must-revalidate",
+				"Content-Type":  "text/text; charset=utf-8",
+			},
+		}
+		return resp, nil
+	}
 
 	event, err := slackevents.ParseEvent(
 		json.RawMessage(req.Body),
-		h.verificationToken,
+		slackevents.OptionNoVerifyToken(),
 	)
 	if err != nil {
 		fmt.Printf("Error: %s\n", err.Error())
 		resp := &events.APIGatewayProxyResponse{
-			StatusCode: 400,
+			StatusCode: http.StatusBadRequest,
 			Headers: map[string]string{
 				"Cache-Control": "no-cache, no-store, must-revalidate",
 				"Content-Type":  "text/text; charset=utf-8",

@@ -85,7 +85,7 @@ resource "aws_iam_policy" "fn-ssm" {
       ],
       "Resource": [
         "arn:aws:ssm:*:*:parameter/${var.slackbot_oauth_access_token}",
-        "arn:aws:ssm:*:*:parameter/${var.slackbot_verification_token}"
+        "arn:aws:ssm:*:*:parameter/${var.slackbot_req_signing_secret}"
       ]
     }
   ]

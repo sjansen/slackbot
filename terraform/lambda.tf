@@ -41,7 +41,7 @@ resource "aws_lambda_function" "fn" {
       SLACKBOT_USE_SSM            = var.use_ssm ? "true" : "false"
       SLACKBOT_DYNAMODB_TABLE     = var.db
       SLACKBOT_OAUTH_ACCESS_TOKEN = var.use_ssm ? "/${var.slackbot_oauth_access_token}" : var.slackbot_oauth_access_token
-      SLACKBOT_VERIFICATION_TOKEN = var.use_ssm ? "/${var.slackbot_verification_token}" : var.slackbot_verification_token
+      SLACKBOT_REQ_SIGNING_SECRET = var.use_ssm ? "/${var.slackbot_req_signing_secret}" : var.slackbot_req_signing_secret
     }
   }
 

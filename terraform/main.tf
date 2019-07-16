@@ -90,9 +90,9 @@ variable "slackbot_oauth_access_token" {
   default = "slackbot/oauth_access_token"
 }
 
-variable "slackbot_verification_token" {
+variable "slackbot_req_signing_secret" {
   type    = "string"
-  default = "slackbot/verification_token"
+  default = "slackbot/req_signing_secret"
 }
 
 variable "subnet_ids" {
