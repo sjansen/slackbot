@@ -2,6 +2,8 @@ github.com/DATA-DOG/go-sqlmock v1.2.0 h1:fQIJWMKY5xsIwZLZTqNYBbJyDfS+P2lyuZAyx9f
 github.com/DATA-DOG/go-sqlmock v1.2.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/alexedwards/scs/v2 v2.1.0 h1:DMObg07KRF16TLpLytA4u0L9rzbuX0clD0BwHQkzAKo=
 github.com/alexedwards/scs/v2 v2.1.0/go.mod h1:ToaROZxyKukJKT/xLcVQAChi5k6+Pn1Gvmdl7h3RRj8=
+github.com/alexedwards/scs/v2 v2.3.1 h1:GnWuDjL2m0ZVjeiCnnKhFVr/zafkgknmOJ5KaZx1rec=
+github.com/alexedwards/scs/v2 v2.3.1/go.mod h1:ToaROZxyKukJKT/xLcVQAChi5k6+Pn1Gvmdl7h3RRj8=
 github.com/aws/aws-lambda-go v1.11.1 h1:wuOnhS5aqzPOWns71FO35PtbtBKHr4MYsPVt5qXLSfI=
 github.com/aws/aws-lambda-go v1.11.1/go.mod h1:Rr2SMTLeSMKgD45uep9V/NP8tnbCcySgu04cx0k/6cw=
 github.com/aws/aws-lambda-go v1.12.0 h1:CgKAMdFIWExd4U6c9DUE+ax8N0fsmkYirqcfmReRCeo=
