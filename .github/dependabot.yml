@@ -1,0 +1,19 @@
+version: 2
+updates:
+- package-ecosystem: gomod
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: github.com/aws/aws-sdk-go
+    versions:
+    - 1.36.19
+    - 1.37.1
+  - dependency-name: github.com/aws/aws-xray-sdk-go
+    versions:
+    - 1.1.0
+    - 1.2.0
+  - dependency-name: github.com/stretchr/testify
+    versions:
+    - 1.6.1
